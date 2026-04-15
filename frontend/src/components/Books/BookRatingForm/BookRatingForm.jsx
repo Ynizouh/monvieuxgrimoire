@@ -29,16 +29,17 @@ function BookRatingForm({
   const onSubmit = async () => {
     if (!connectedUser || !auth) {
       navigate(APP_ROUTES.SIGN_IN);
+      return;
     }
     const update = await rateBook(id, userId, rating);
-    console.log(update);
-    if (update) {
+    if (update && typeof update !== 'string') {
       // eslint-disable-next-line no-underscore-dangle
       setBook({ ...update, id: update._id });
     } else {
       alert(update);
     }
   };
+
   return (
     <div className={styles.BookRatingForm}>
       <form onSubmit={handleSubmit(onSubmit)}>
