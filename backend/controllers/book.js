@@ -96,10 +96,13 @@ exports.modifyBook = (req, res, next) => {
       delete bookObject._userId;
       Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
         .then(() => {
-          if (req.file) {
-            fs.unlinkSync(`images/${book.imageUrl.split('/images/')[1]}`);
+          if (req.file && book.imageUrl) {
+            const filename = book.imageUrl.split('/images/')[1];
+            fs.unlink(`images/${filename}`, (err) => {
+              if (err) console.log("L'ancienne image n'a pas pu être supprimée :", err);
+            });
           }
-          res.status(200).json({ message: 'Livre modifié' })
+          res.status(200).json({ message: 'Livre modifié' });
         })
         .catch(error => res.status(400).json({ error }));
     })
