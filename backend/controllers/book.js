@@ -63,7 +63,7 @@ exports.createBook = (req, res, next) => {
     ratings: [],
     averageRating: 0,
     userId: req.auth.userId,
-    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+    imageUrl: `${req.headers['x-forwarded-proto'] || req.protocol}://${req.get('host')}/images/${req.file.filename}`,
   });
   book.save()
     .then(() => res.status(201).json({ message: 'Livre enregistré' }))
@@ -91,7 +91,7 @@ exports.modifyBook = (req, res, next) => {
       }
       const bookObject = req.file ? {
         ...JSON.parse(req.body.book),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        imageUrl: `${req.headers['x-forwarded-proto'] || req.protocol}://${req.get('host')}/images/${req.file.filename}`
       } : { ...req.body };
       delete bookObject._userId;
       Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
