@@ -1,4 +1,4 @@
-const Book = require('../modèle/Book');
+const Book = require('../models/Book');
 const fs = require('fs');
 
 exports.getAllBooks = (req, res, next) => {

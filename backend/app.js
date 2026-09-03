@@ -42,7 +42,21 @@ app.use(express.json());
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    dbState: mongoose.connection.readyState,
+    hasMongoUri: !!process.env.MONGODB_URI,
+    hasJwtSecret: !!process.env.JWT_SECRET
+  });
+});
+
 app.use('/api/books', bookRoutes);
 app.use('/api/auth', userRoutes);
+
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ error: err.message || 'Internal Server Error' });
+});
 
 module.exports = app;
