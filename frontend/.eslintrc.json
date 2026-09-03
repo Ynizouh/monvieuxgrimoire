@@ -19,6 +19,8 @@
     "rules": {
         "linebreak-style": "off",
         "react/require-default-props": "off",
-        "react/prop-types": "warn"
+        "react/prop-types": "off",
+        "no-console": "off",
+        "no-alert": "off"
     }
 }
