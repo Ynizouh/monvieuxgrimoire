@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../modèle/User');
 
 exports.signup = (req, res, next) => {
+  if (!req.body.email || !req.body.password) {
+    return res.status(400).json({ error: 'Email et mot de passe requis' });
+  }
   bcrypt.hash(req.body.password, 10)
     .then(hash => {
       const user = new User({
@@ -11,12 +14,21 @@ exports.signup = (req, res, next) => {
       });
       user.save()
         .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
-        .catch(error => { console.error('Signup save error:', error); res.status(400).json({ error }); });
+        .catch(error => {
+          console.error('Signup save error:', error);
+          res.status(400).json({ error: error.message || error });
+        });
     })
-    .catch(error => res.status(500).json({ error }));
+    .catch(error => {
+      console.error('Signup hash error:', error);
+      res.status(500).json({ error: error.message || error });
+    });
 };
 
 exports.login = (req, res, next) => {
+  if (!req.body.email || !req.body.password) {
+    return res.status(400).json({ error: 'Email et mot de passe requis' });
+  }
   User.findOne({ email: req.body.email })
     .then(user => {
       if (!user) {
@@ -36,7 +48,13 @@ exports.login = (req, res, next) => {
             )
           });
         })
-        .catch(error => res.status(500).json({ error }));
+        .catch(error => {
+          console.error('Login compare error:', error);
+          res.status(500).json({ error: error.message || error });
+        });
     })
-    .catch(error => res.status(500).json({ error }));
+    .catch(error => {
+      console.error('Login find error:', error);
+      res.status(500).json({ error: error.message || error });
+    });
 };
